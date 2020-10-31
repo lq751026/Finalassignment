@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 开启注解扫描 -->
+    <context:component-scan base-package="com.lq"/>
+
+    <!-- 视图解析器对象 -->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/><!--解析的路径-->
+        <property name="suffix" value=".jsp"/><!--解析的后缀-->
+    </bean>
+
+    <!--前端控制器，哪些静态资源不拦截-->
+
+    <!-- 配置文件解析器对象 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxInMemorySize" value="10485760"/>
+    </bean>
+    <!-- 开启SpringMVC框架注解的支持 -->
+    <mvc:annotation-driven />
+    <!-- 引入数据源的配置信息文件-->
+    <context:property-placeholder location="classpath*:db.properties"></context:property-placeholder>
+    <!-- 配置数据源-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}" ></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+    <!--把数据交给数据工厂-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--开启扫dao包的配置-->
+    <bean  class="org.mybatis.spring.mapper.MapperScannerConfigurer" >
+        <property name="basePackage" value="com.lq.dao"></property>
+    </bean>
+
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+
+    <!--开启aop的注解-->
+    <aop:aspectj-autoproxy/>
+</beans>
